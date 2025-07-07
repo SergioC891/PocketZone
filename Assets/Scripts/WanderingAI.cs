@@ -8,9 +8,12 @@ public class WanderingAI : MonoBehaviour
     [SerializeField] private string bulletGameObjName = "Bullet(Clone)";
 
     public float speed = 0.3f;
-    public float obstacleRange = 1.0f;
+    public float attackSpeed = 0.7f;
+    public float delayBeetwenAttacks = 5.0f;
+    public float attackTime = 0.7f;
 
     private bool attackStarted = false;
+    private bool delayBeetwenAttacksFlag = false;
 
     private GameObject playerGameObj;
     private Vector3 characterLocalScale;
@@ -24,23 +27,25 @@ public class WanderingAI : MonoBehaviour
         speed = Mathf.Sign(characterLocalScale.x) * speed;
     }
 
-
-    // Update is called once per frame
     void Update()
     {
         if (!attackStarted)
         {
             transform.Translate(speed * Time.deltaTime, 0, 0);
         }
+        else
+        {
+            attackMove();
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.name == playerGameObjName && !attackStarted)
+        if (collision.name == playerGameObjName && (!attackStarted && !delayBeetwenAttacksFlag))
         {
             StartCoroutine(attack());
         }
-        else if (collision.name != bulletGameObjName)
+        else if (collision.name != bulletGameObjName && collision.name != playerGameObjName)
         {
             characterLocalScale.x = -characterLocalScale.x;
             this.gameObject.transform.localScale = characterLocalScale;
@@ -48,17 +53,35 @@ public class WanderingAI : MonoBehaviour
         }
     }
 
+    void attackMove()
+    {
+        Vector3 targetPosition = playerGameObj.transform.position;
+        Vector3 directionToMove = targetPosition - transform.position;
+        float maxLength = Vector3.Distance(transform.position, targetPosition);
+
+        directionToMove = directionToMove.normalized * Time.deltaTime * attackSpeed;
+        transform.position = transform.position + Vector3.ClampMagnitude(directionToMove, maxLength);
+    }
+
     IEnumerator attack()
     {
-        attackStarted = true;
+        if (!attackStarted && !delayBeetwenAttacksFlag)
+        {
+            attackStarted = true;
 
-        playerGameObj.GetComponent<HealthBox>().decreaseHealth();
+            playerGameObj.GetComponent<HealthBox>().decreaseHealth();
 
-        StartCoroutine(attackFX());
+            StartCoroutine(attackFX());
 
-        yield return new WaitForSeconds(.15f);
+            yield return new WaitForSeconds(attackTime);
 
-        attackStarted = false;
+            attackStarted = false;
+            delayBeetwenAttacksFlag = true;
+
+            yield return new WaitForSeconds(delayBeetwenAttacks);
+
+            delayBeetwenAttacksFlag = false;
+        }
     }
 
     IEnumerator attackFX()

@@ -18,7 +18,6 @@ public class SceneController : MonoBehaviour
 
     void Start()
     {
-        Managers.Data.LoadGameState();
         StartCoroutine(createEnemiesProcess());
     }
 

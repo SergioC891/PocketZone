@@ -1189,7 +1189,7 @@ MonoBehaviour:
   characterName: Allod
   characterHealth: 10
   XOffset: -30
-  YOffset: -85
+  YOffset: 50
 --- !u!1 &365542048
 GameObject:
   m_ObjectHideFlags: 0

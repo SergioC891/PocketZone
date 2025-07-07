@@ -20,6 +20,7 @@ public class MovementController : MonoBehaviour
     {
         _rigidBody = GetComponent<Rigidbody2D>();
 
+        Managers.Data.LoadGameState();
 
         for (int i = 0; i < bulletsOnStart; i++)
         {
@@ -61,24 +62,32 @@ public class MovementController : MonoBehaviour
 
     private void shoot()
     {
-        shootFlag = true;
-
-        GameObject bullet = ObjectPool.SharedInstance.GetPooledObject(bulletGameObjName);
-
-        if (bullet != null)
+        if (Managers.Inventory.GetItemCount(bulletsName) > 0)
         {
-            bullet.SetActive(true);
-            bullet.SendMessage("shoot", this.transform);
+            shootFlag = true;
+
+            GameObject bullet = ObjectPool.SharedInstance.GetPooledObject(bulletGameObjName);
+
+            if (bullet != null)
+            {
+                bullet.SetActive(true);
+                bullet.SendMessage("shoot", this.transform);
+            }
+
+            Managers.Inventory.decItem(bulletsName);
+
+            if (popup.gameObject.activeSelf)
+            {
+                popup.Refresh();
+            }
+
+            StartCoroutine(delayOnShoot());
         }
 
-        Managers.Inventory.decItem(bulletsName);
-
-        if (popup.gameObject.activeSelf)
+        if (Managers.Inventory.GetItemCount(bulletsName) <= 0)
         {
-            popup.Refresh();
+            Managers.Inventory.deleteItem(bulletsName);
         }
-
-        StartCoroutine(delayOnShoot());
     }
 
     IEnumerator delayOnShoot()

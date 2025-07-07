@@ -7,7 +7,7 @@ public class HealthBox : MonoBehaviour
     [SerializeField] private string characterName;
     [SerializeField] private int characterHealth = 3;
     [SerializeField] private int XOffset = -30;
-    [SerializeField] private int YOffset = -85;
+    [SerializeField] private int YOffset = 50;
 
     private int height = 15;
     private int width = 50;
@@ -81,15 +81,15 @@ public class HealthBox : MonoBehaviour
             boxStyle = new GUIStyle(GUI.skin.box);
             boxStyle.fontSize = 20;
 
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cameraMain.GetComponent<Camera>(), transform.position);
-            GUI.Box(new Rect((screenPoint.x + XOffset), (Screen.height - screenPoint.y + YOffset), width, height), new GUIContent(" "), boxStyle);
+            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cameraMain.GetComponent<Camera>(), new Vector3(transform.position.x, transform.position.y + (YOffset/100.0f), transform.position.z));
+            GUI.Box(new Rect((screenPoint.x + XOffset), (Screen.height - screenPoint.y), width, height), new GUIContent(" "), boxStyle);
 
             //
             if (healthWidth > 0)
             {
                 boxStyle = new GUIStyle(GUI.skin.box);
                 boxStyle.normal.background = resultTexture;
-                GUI.Box(new Rect((screenPoint.x + XOffset), (Screen.height - screenPoint.y + YOffset), healthWidth, height), new GUIContent(" "), boxStyle);
+                GUI.Box(new Rect((screenPoint.x + XOffset), (Screen.height - screenPoint.y), healthWidth, height), new GUIContent(" "), boxStyle);
             }
 
             //
@@ -99,7 +99,7 @@ public class HealthBox : MonoBehaviour
             boxStyle.normal.textColor = Color.white;
             boxStyle.normal.background = resultTexture2;
 
-            GUI.Box(new Rect((screenPoint.x + XOffset), (Screen.height - screenPoint.y + YOffset - 30.0f), widthTextBox, 30), new GUIContent(characterName), boxStyle);
+            GUI.Box(new Rect((screenPoint.x + XOffset), (Screen.height - screenPoint.y - 30.0f), widthTextBox, 30), new GUIContent(characterName), boxStyle);
         }
     }
 

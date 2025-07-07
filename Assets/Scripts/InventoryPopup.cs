@@ -74,6 +74,7 @@ public class InventoryPopup : MonoBehaviour
     {
         Managers.Inventory.deleteItem(_curItem);
         Refresh();
+        Managers.Data.SaveGameState();
     }
 
     public void showDeleteButton(bool value)
